@@ -32,11 +32,24 @@ bool SessionAgregator::sessionDead(std::string uuidForSession) {
 }
 
 void SessionAgregator::updateSessionTime(const std::string &uuidForSession, Session &thisSession) {
-    // обновляем сессию, т.к. поступил новый запрос
+    // Делаем резервную копию перед обновлением
+    Session backupSession = thisSession;
+    
+    // Обновляем время создания сессии
     thisSession.creationTime = getCurrentTime();
-    // кладём обновлённое значение в мапу
-    currentConnections.erase(uuidForSession);
+    
+    // Добавляем лог об обновлении
+    std::cout << "Обновление сессии: " << uuidForSession << std::endl;
+    
+    // Обновляем значение в мапе без предварительного удаления
     currentConnections[uuidForSession] = thisSession;
+    
+    // Добавляем счетчик обновлений если его нет
+    if (thisSession.updateCount == 0) {
+        thisSession.updateCount = 1;
+    } else {
+        thisSession.updateCount++;
+    }
 }
 
 bool SessionAgregator::diffMoreTtl(tm creationTime) {
