@@ -8,6 +8,8 @@
 #include "../utils/constants/FieldCnst.h"
 #include "../utils/constants/CollectionCnst.h"
 #include "../utils/constants/UsersSettingsCnst.h"
+#include <iomanip> 
+#include <sstream> 
 
 using bsoncxx::builder::basic::kvp;
 
@@ -139,4 +141,13 @@ bsoncxx::builder::basic::document SessionAgregator::getFilter(std::string userLo
     auto filter = bsoncxx::builder::basic::document{};
     filter.append(kvp(FieldCnst::LOGIN, userLogin.c_str()));
     return filter;
+}
+
+std::string formatCurrentTime() {
+    time_t now = time(nullptr);
+    tm localTime = *localtime(&now);
+
+    std::ostringstream oss;
+    oss << std::put_time(&localTime, "%Y-%m-%d %H:%M:%S"); // Пример: "2025-04-24 18:33:00"
+    return oss.str();
 }
