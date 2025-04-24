@@ -139,3 +139,18 @@ bsoncxx::builder::basic::document SessionAgregator::getFilter(std::string userLo
     filter.append(kvp(FieldCnst::LOGIN, userLogin.c_str()));
     return filter;
 }
+
+void SessionAgregator::removeDeadSessions() {
+    std::vector<std::string> toRemove;
+    
+    for (const auto& [uuid, session] : currentConnections) {
+        if (diffMoreTtl(session.creationTime)) {
+            toRemove.push_back(uuid);
+        }
+    }
+
+    for (const auto& uuid : toRemove) {
+        std::cout << "Удаление протухшей сессии: " << uuid << std::endl;
+        currentConnections.erase(uuid);
+    }
+}
